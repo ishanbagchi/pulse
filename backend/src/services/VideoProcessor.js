@@ -153,9 +153,7 @@ class VideoProcessor {
 				metadata = await this.getVideoMetadata(filePath)
 				thumbnail = await this.generateThumbnail(filePath, uploadDir)
 			} catch {
-				console.log(
-					'FFmpeg not available, skipping metadata/thumbnail extraction',
-				)
+				// FFmpeg not available, skipping metadata/thumbnail extraction
 			}
 
 			const analysisResult = await this.runSensitivityAnalysis(

@@ -11,10 +11,10 @@ exports.register = async (req, res, next) => {
 			return res.status(400).json({ error: 'Name is required' })
 		if (!email || !EMAIL_RE.test(email))
 			return res.status(400).json({ error: 'Valid email is required' })
-		if (!password || password.length < 6)
+		if (!password || password.length < 8)
 			return res
 				.status(400)
-				.json({ error: 'Password must be at least 6 characters' })
+				.json({ error: 'Password must be at least 8 characters' })
 
 		const existingUser = await User.findOne({ email })
 		if (existingUser) {

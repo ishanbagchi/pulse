@@ -1,6 +1,10 @@
 import { io } from 'socket.io-client'
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001'
+const SOCKET_URL =
+	import.meta.env.VITE_SOCKET_URL ||
+	(typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+		? `${window.location.protocol}//${window.location.host}`
+		: 'http://localhost:5001')
 
 let socket = null
 

@@ -1,5 +1,9 @@
+const config = require('../config')
+
 const errorHandler = (err, req, res, _next) => {
-	console.error('Error:', err.stack || err.message)
+	if (config.nodeEnv !== 'production') {
+		console.error('Error:', err.stack || err.message)
+	}
 
 	if (err.name === 'ValidationError') {
 		const messages = Object.values(err.errors).map((e) => e.message)

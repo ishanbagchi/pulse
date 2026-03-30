@@ -126,14 +126,23 @@ exports.streamVideo = async (req, res, next) => {
 			return res.status(404).json({ error: 'Video not found' })
 		}
 
-		if (
-			req.user.role !== 'admin' &&
-			video.organization !== req.user.organization
-		) {
-			return res.status(403).json({ error: 'Access denied' })
+		if (req.user.role !== 'admin') {
+			if (video.organization !== req.user.organization) {
+				return res.status(403).json({ error: 'Access denied' })
+			}
+			if (
+				req.user.role === 'viewer' &&
+				video.user.toString() !== req.user._id.toString()
+			) {
+				return res.status(403).json({ error: 'Access denied' })
+			}
 		}
 
 		const filePath = path.resolve(video.filename)
+		const uploadDir = path.resolve(__dirname, '../../', config.uploadDir)
+		if (!filePath.startsWith(uploadDir)) {
+			return res.status(403).json({ error: 'Invalid file path' })
+		}
 
 		if (!fs.existsSync(filePath)) {
 			return res.status(404).json({ error: 'Video file not found' })
@@ -190,6 +199,12 @@ exports.deleteVideo = async (req, res, next) => {
 		await Video.findByIdAndDelete(req.params.id)
 
 		const filePath = path.resolve(video.filename)
+		const uploadDir = path.resolve(__dirname, '../../', config.uploadDir)
+		if (!filePath.startsWith(uploadDir)) {
+			return res.json({
+				error: 'Video record deleted, file path invalid',
+			})
+		}
 		if (fs.existsSync(filePath)) {
 			fs.unlinkSync(filePath)
 		}
@@ -204,7 +219,7 @@ exports.deleteVideo = async (req, res, next) => {
 			}
 		}
 
-		res.json({ message: 'Video deleted successfully' })
+		res.json({ error: null, message: 'Video deleted successfully' })
 	} catch (error) {
 		next(error)
 	}
@@ -227,9 +242,14 @@ exports.updateVideo = async (req, res, next) => {
 		}
 
 		const updates = {}
-		if (title) updates.title = title.trim()
+		if (title !== undefined) {
+			if (!title.trim())
+				return res.status(400).json({ error: 'Title cannot be empty' })
+			updates.title = title.trim()
+		}
 		if (description !== undefined) updates.description = description.trim()
-		if (category) updates.category = category.trim()
+		if (category !== undefined && category.trim())
+			updates.category = category.trim()
 
 		const updated = await Video.findByIdAndUpdate(req.params.id, updates, {
 			new: true,

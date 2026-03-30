@@ -20,11 +20,8 @@ const setupSocket = (io) => {
 	io.on('connection', (socket) => {
 		const userId = socket.userId
 		socket.join(`user:${userId}`)
-		console.log(`User connected: ${userId}`)
 
-		socket.on('disconnect', () => {
-			console.log(`User disconnected: ${userId}`)
-		})
+		socket.on('disconnect', () => {})
 	})
 }
 
