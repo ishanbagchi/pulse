@@ -14,7 +14,8 @@ const ALLOWED_MIME_TYPES = [
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, path.resolve(config.uploadDir))
+		const uploadPath = path.resolve(__dirname, '../../', config.uploadDir)
+		cb(null, uploadPath)
 	},
 	filename: (req, file, cb) => {
 		const uniqueSuffix = crypto.randomBytes(16).toString('hex')

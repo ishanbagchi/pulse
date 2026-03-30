@@ -8,7 +8,18 @@ router.use(authenticate)
 router.post(
 	'/',
 	authorize('editor', 'admin'),
-	upload.single('video'),
+	(req, res, next) => {
+		upload.single('video')(req, res, (err) => {
+			if (err) {
+				console.error('Upload error:', err.message)
+				if (err.code === 'LIMIT_FILE_SIZE') {
+					return res.status(413).json({ error: 'File too large' })
+				}
+				return res.status(400).json({ error: err.message })
+			}
+			next()
+		})
+	},
 	videoController.uploadVideo,
 )
 

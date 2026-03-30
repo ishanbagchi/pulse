@@ -27,7 +27,7 @@ const io = new Server(server, {
 	},
 })
 
-const uploadDir = path.resolve(config.uploadDir)
+const uploadDir = path.resolve(__dirname, '../', config.uploadDir)
 if (!fs.existsSync(uploadDir)) {
 	fs.mkdirSync(uploadDir, { recursive: true })
 }
