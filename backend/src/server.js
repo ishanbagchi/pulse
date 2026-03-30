@@ -19,7 +19,10 @@ const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
 	cors: {
-		origin: config.corsOrigin,
+		origin: config.corsOrigin
+			.split(',')
+			.map((o) => o.trim())
+			.filter(Boolean),
 		methods: ['GET', 'POST'],
 	},
 })
@@ -30,7 +33,24 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
-app.use(cors({ origin: config.corsOrigin, credentials: true }))
+
+const allowedOrigins = config.corsOrigin
+	.split(',')
+	.map((o) => o.trim())
+	.filter(Boolean)
+
+app.use(
+	cors({
+		origin: (origin, callback) => {
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true)
+			} else {
+				callback(new Error(`CORS not allowed for origin: ${origin}`))
+			}
+		},
+		credentials: true,
+	}),
+)
 app.use(express.json({ limit: '10mb' }))
 
 const limiter = rateLimit({
