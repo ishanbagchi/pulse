@@ -91,7 +91,8 @@ export default function VideoPlayer() {
 	if (!video) return null
 
 	const token = localStorage.getItem('token')
-	const streamUrl = `/api/videos/${video._id}/stream`
+	const apiBase = import.meta.env.VITE_API_URL || '/api'
+	const streamUrl = `${apiBase}/videos/${video._id}/stream`
 	const canModify =
 		user?.role === 'admin' ||
 		video.user?._id === user?.id ||

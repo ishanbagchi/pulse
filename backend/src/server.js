@@ -78,8 +78,6 @@ app.use(errorHandler)
 
 const start = async () => {
 	await connectDB()
-	console.log('CORS_ORIGIN:', config.corsOrigin)
-	console.log('Allowed origins:', allowedOrigins)
 	server.listen(config.port, () => {
 		console.log(`Server running on port ${config.port}`)
 	})
