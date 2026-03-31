@@ -140,7 +140,18 @@ exports.streamVideo = async (req, res, next) => {
 
 		const filePath = path.resolve(video.filename)
 		const uploadDir = path.resolve(__dirname, '../../', config.uploadDir)
+		console.log(
+			'[stream] filePath:',
+			filePath,
+			'| uploadDir:',
+			uploadDir,
+			'| exists:',
+			fs.existsSync(filePath),
+		)
 		if (!filePath.startsWith(uploadDir)) {
+			console.log(
+				'[stream] Path check failed - filePath does not start with uploadDir',
+			)
 			return res.status(403).json({ error: 'Invalid file path' })
 		}
 
